@@ -5,10 +5,11 @@ const hash = s => createHash("sha256").update(String(s)).digest();
 const json = (o, s = 200) =>
   new Response(JSON.stringify(o), { status: s, headers: { "content-type": "application/json" } });
 
-export default async (req) => {
+export default async (req, context) => {
   if (req.method !== "POST") return json({ error: "Method not allowed." }, 405);
 
-  const { NETLIFY_TOKEN, SITE_ID, LAUNCH_PASSWORD } = process.env;
+  const { NETLIFY_TOKEN, LAUNCH_PASSWORD } = process.env;
+  const SITE_ID = process.env.SITE_ID || context?.site?.id;
   if (!NETLIFY_TOKEN || !SITE_ID || !LAUNCH_PASSWORD)
     return json({ error: "The launcher is not configured yet. Ask your web developer." }, 500);
 
